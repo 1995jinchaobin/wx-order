@@ -1,0 +1,250 @@
+<view class="maskOrders" style="height: {{screenHeight}}px;">
+  <view class="typesArea">
+    <view wx:for="{{typeList}}" wx:for-index="index" class="typeBtn {{index==selectTypeIndex?'selectTypeBtn':''}}" data-index="{{index}}" bindtap="changeType" wx:key="index">
+      {{item}}
+    </view>
+  </view>
+  <!-- 列表 -->
+  <view class="noDataTip" wx:if="{{orderList.length == 0}}">暂无数据</view>
+  <view style="padding-bottom:200rpx;">
+    <view class="orderInfo" wx:for="{{orderList}}" wx:for-index="index" wx:key="index" data-msg="{{item}}"  mut-bind:tap="toOrderMsg" >
+      <view class="orderInfoDetail" data-msg="{{item}}" >
+        <!-- 图片第一张缩略图 -->
+        <image class="orderImg" src="{{imgBaseUrl+item.orderDetails[0].flowerUrl}}"></image>
+        <!-- 左边 -->
+        <view style="width: 396rpx;">
+          <!-- 标题+是否加急 -->
+          <view style="display:flex;align-items:center;">
+            <view class="orderTitle">{{item.companyName}}</view>
+            <!-- 是否加急 -->
+            <view class="orderExpedite" style="color:white;background:red;border-radius:8rpx;padding:4rpx;" wx:if="{{item.expedite==1}}">加急</view>
+          </view>
+          <!-- 订单号 -->
+          <view class="orderAddress">订单号：{{item.orderId}}</view>
+        </view>
+        <!-- 右边 -->
+        <view class="orderRight">
+          <view class="orderState" wx:if="{{item.type!=100}}">{{statusList[item.type+1]}}</view>
+            <view class="orderState" wx:else>订单已取消</view>
+          <!-- 下单时间 -->
+          <view class="orderTime">{{item.createTime}}</view>
+        </view>
+      </view>
+      <!-- 底部进度条 -->
+      <view style="position:relative;">
+        <view style="display:flex;position:absolute;top:0rpx;">
+          <view style="width:{{item.type<=1&&item.type!=100?'80':item.type<=3&&item.type!=100?'210':item.type<=4&&item.type!=100?'350':item.type<=5&&item.type!=100?'480':(item.type==7||item.type==8&&item.type!=100)?'680':item.type==100?'0':'600'}}rpx;" class="nowStateChecked"></view>
+          <view style="width:{{item.type<=1&&item.type!=100?'600':item.type<=3&&item.type!=100?'470':item.type<=4&&item.type!=100?'330':item.type<=5&&item.type!=100?'200':(item.type==7||item.type==8&&item.type!=100)?'0':item.type==100?'680':'80'}}rpx;" class="nowStateUnchecked"></view>
+        </view>
+        <view  style="display:flex;justify-content: space-around;position:absolute;top:-8rpx;">
+          <view class="stateDetail" style="margin-left:70rpx;">
+            <image class="nowStateImg" src="{{item.type>=2&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>=2?'#333333':'#999999'}};" class="stateText">上浆</view>
+          </view>
+          <view class="stateDetail" style="margin-left:90rpx;">
+            <image class="nowStateImg" src="{{item.type>=4&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>=4?'#333333':'#999999'}};"  class="stateText">打印</view>
+          </view>
+          <view class="stateDetail" style="margin-left:90rpx;">
+            <image class="nowStateImg" src="{{item.type>=5&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>=5?'#333333':'#999999'}};"  class="stateText">后处理</view>
+          </view>
+          <view class="stateDetail" style="margin-left:90rpx;">
+            <image class="nowStateImg" src="{{item.type>=6&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>=6?'#333333':'#999999'}};"  class="stateText">检验</view>
+          </view>
+          <view class="stateDetail" style="margin-left:90rpx;">
+            <image class="nowStateImg" src="{{item.type==7||item.type==8&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type==7||item.type==8?'#333333':'#999999'}};"  class="stateText">出货</view>
+          </view>
+        </view>
+      </view>
+      <!-- 订单预计完成时间 -->
+      <view class="orderNeedTime" wx:if="{{item.type==3}}">
+        <view>预计出货时间：</view>
+        <view class="needTimeDetail">{{item.expedite==0?item.needTimes-1+'-'+item.needTimes:item.urgentNeedTimes-1+'-'+item.urgentNeedTimes}}天左右</view>
+      </view>
+      <!-- 订单打印信息 -->
+      <view class="orderNeedTime" style="margin-top:{{item.type==3?6:100}}rpx;" >
+        <view>打印米数：</view>
+        <view class="needTimeDetail">已完成{{item.finishMeter}}米，剩余{{item.unfinishMeter}}米</view>
+      </view>
+      <!-- 已退货状态显示退货备注 -->
+      <view  class="expressInfo orderNeedTime" style="margin-top:6rpx;" wx:if="{{(item.type==8)&&(role==0||role==1||role==2||role==3)&&item.type!=100}}">
+        <view>退货备注：</view>
+        <view class="needTimeDetail">{{item.note3}}</view>
+      </view>
+      <!-- 如果已分配打印机器，则显示在线打印员字段 -->
+      <view class="orderNeedTime" style="margin-top:7rpx" wx:if="{{item.type==3&&item.type!=100}}">
+        <view>在线打印员：</view>
+        <view class="needTimeDetail">{{item.onlinePrinter==null?'无':item.onlinePrinter}}</view>
+      </view>
+      <!-- 已发货状态显示快递信息 -->
+      <view class="expressInfo orderNeedTime" style="margin-top:6rpx;" wx:if="{{(item.type==7)&&(role==0||role==1||role==2||role==3)&&item.type!=100}}">
+        <view>物流：</view>
+        <view class="needTimeDetail">{{item.expressType}} {{item.expressNumber}}</view>
+      </view>
+      <!-- 分割线 -->
+      <view class="line" style="margin-top:{{((item.type==8)&&(role==0||role==1||role==2||role==3)&&item.type!=100)||((item.type==7)&&(role==0||role==1||role==2||role==3)&&item.type!=100)?70:39}}rpx;"></view>
+      <!-- 底部信息 -->
+      <view class="orderBottomInfo">
+        <!-- 总价 -->
+        <view class="orderTotalMoney">总价：¥{{item.totalPrice}}</view>
+        <!-- 操作 -->
+        <!-- 厂长在打印之前都可以修改订单备注 -->
+        <view data-id="{{item.id}}" data-Index="{{index}}" class="toPay" wx:if="{{(role==2&&item.type!=100)||(role==1&&item.type==0)}}" catchtap="updateOrder">修改订单</view>
+        <!-- 审核不通过状态，显示驳回原因按钮 -->
+        <view data-id="{{item.id}}" data-message="{{item.reason}}" data-Index="{{index}}" class="toPay" wx:if="{{item.type==-1&&role==1&&item.type!=100}}" catchtap="showResult">驳回原因</view>
+        <!-- 待审核状态，显示审核按钮 -->
+        <view data-id="{{item.id}}" data-message="{{item.note}}" class="toPay leftButton" wx:if="{{item.type==0&&role==2&&item.type!=100}}" catchtap="handlerReview">审核</view>
+        <!-- 已审核状态，调色员显示调色按钮 -->
+        <view data-id="{{item.id}}" style="margin-top:{{role==2?-84:25}}rpx" data-Index="{{index}}" class="toPay" wx:if="{{(role==7||role==2)&&(item.type == 1||item.type==2)&&item.colorFinishTime==null}}" catchtap="changeColor">调色</view>
+        <!-- 已审核状态，仓库管理员显示上浆按钮 -->
+        <view data-id="{{item.id}}" class="toPay leftButton" data-Index="{{index}}" style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}"  wx:if="{{item.type==1&&(role==3||role==2)&&item.type!=100}}" catchtap="handlerNext">上浆调拨</view>
+        <!-- 已上浆状态，显示分配打印按钮 -->
+        <!-- <view data-id="{{item.id}}" class="toPay"  style="top:{{role==2?30:56}}rpx" wx:if="{{item.type==2&&(role==4||role==2)&&item.type!=100}}" catchtap="handlerGive">分配打印</view> -->
+        <!-- 上浆完成状态，显示打印分配按钮 -->
+        <picker data-id="{{item.id}}" mut-bind:change="bindPickerChange" value="0" range="{{machineList}}" range-key="name">
+          <view class="picker">
+            <view data-id="{{item.id}}" class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" wx:if="{{item.type==2 && (role==4||role==2)&&item.type!=100}}" mut-bind:tap="getMachineList">打印分配</view>
+          </view>
+        </picker>
+        <!-- 已分配打印状态，并且该订单没有在线打印员，打印员可以接单 -->
+        <view data-id="{{item.id}}" style="margin-top:-84rpx" data-Index="{{index}}" class="toPay" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.onlinePrinterId==0}}" catchtap="receivePrint">接单</view>
+        <!-- 已分配打印状态，并且该订单的在线打印员是自己，打印员可以换班 -->
+        <view data-id="{{item.id}}" style="margin-top:-84rpx" data-Index="{{index}}" class="toPay" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.onlinePrinterId!=0&&item.onlinePrinterId==userId}}" catchtap="changePrint">换班</view>
+        <!-- 已分配打印状态，显示数量输入按钮和剩余未打印米数 -->
+        <view data-id="{{item.id}}" data-finishMeter="{{item.finishMeter}}" data-unfinishMeter="{{item.unfinishMeter}}" class="toPay leftButton" wx:if="{{item.type==3 && role==5&&item.type!=100}}" catchtap="handlerHavePrint">数量输入</view>
+        <view data-id="{{item.id}}" data-finishMeter="{{item.finishMeter}}" data-unfinishMeter="{{item.unfinishMeter}}" class="toPay"  style="right:32rpx;background-color:#'108EE9';color:#'FFFFFF';" wx:if="{{item.type==3 && role==5&&item.type!=100}}" catchtap="handlerHavePrintFinish">完成打印</view>
+        <!-- 已打印状态，显示蒸化按钮 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}"  data-message="{{item.note}}" wx:if="{{item.type==4 && (role==6||role==2)&&item.type!=100}}" catchtap="handlerSteam">蒸化</view>
+        <!-- 已蒸化状态，显示检验按钮 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}" wx:if="{{item.type==5 && (role==6||role==2)&&item.type!=100}}" catchtap="handlerCheck">检验</view>
+        <!-- 已检验状态，显示发货审核按钮 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==6 && (role==1||role==2)&&item.type!=100}}" catchtap="handlerSendCheck">发货审核</view>
+        <!-- 发货审核通过状态，显示发货按钮 仓库管理员 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==9 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerSend">发货</view>
+        <!-- 已发货状态，如果是业务员角色，显示退货按钮 -->
+        <view style="top:30rpx"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-id="{{item.id}}" data-message="{{item.note}}" wx:if="{{(item.type==7) && (role==1||role==2)&&item.type!=100}}" catchtap="handlerReturn">退货</view>
+        <!-- 已发货状态，如果是业务员/客户角色，显示评论按钮 -->
+        <view style="top:30rpx"  class="toPay leftButton"  style="right:{{role==1?230:32}}rpx;background-color:#{{role==1?'F1F2F6':'108EE9'}};color:#{{role==1?'646D7D':'FFFFFF'}}" data-id="{{item.id}}" data-message="{{item.note}}" wx:if="{{(item.type==7) && (((role==2||role==1)&&(item.comment2==''||item.comment2==null))||(role==0&&(item.comment1==''||item.comment1==null))||(role==2&&item.type==7&&item.fkUserId==userId&&item.comment2==''))&&item.type!=100}}" catchtap="goToRate">评论</view>
+      </view>
+    </view>
+  </view>
+  <tabBar selected="{{1}}"></tabBar>
+  <!-- 输入打印米数弹框 -->
+  <view wx:if="{{showPrintBox}}" class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
+  </view>
+  <view wx:if="{{showPrintBox}}" style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;" class='printMeterArea'>
+    <view class='printMeterTitle'>输入打印米数</view>
+    <view class='printMeterAreaInputArea'>
+      <input bindinput='bindDayinMeterInput' value="{{dayinMeter}}" type='number'></input>
+      <view class='meter'>米</view>
+    </view>
+    <view class='printTip'>您已打印{{finishMeter}}米，还剩{{unfinishMeter }}米</view>
+    <view class='printBtnArea'>
+      <view bindtap='cancelPrint' class='cancelBtn'>取消</view>
+      <view bindtap='surePrint' class='sureBtn'>确定</view>
+    </view>
+  </view>
+
+  <!-- 输入调拨米数弹框 -->
+  <view wx:if="{{showNextBox}}" class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
+  </view>
+  <view wx:if="{{showNextBox}}" style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;" class='printMeterArea1'>
+    <view class='printMeterTitle'>
+      <text>半票仓米数</text>
+      <text class="num">{{num1}}</text>
+      <!-- <input bindinput='bindMeterInput' value="{{meter}}" type='number'></input> -->
+      <text class='unit'>米</text>
+    </view>
+    <view class='printMeterTitle'>
+      <text>半票仓匹数</text>
+      <text class="num">{{rollNum}}</text>
+      <!-- <input bindinput='bindMeterInput' value="{{meter}}" type='number'></input> -->
+      <text class='unit'>匹</text>
+    </view>
+    <view class='printMeterTitle'>
+      <text>上浆仓米数</text>
+      <text class="num">{{num2}}</text>
+      <!-- <input bindinput='bindMeterInput' value="{{meter}}" type='number'></input> -->
+      <text class='unit'>米</text>
+    </view>
+    <view class='printMeterTitle'>
+      <text class="title">输入调拨米数</text>
+      <input bindinput='bindMeterInput' value="{{meter}}" type='number' bindchange='maxNum1'></input>
+      <text class='meter'>米</text>
+    </view>
+    <view class='printMeterTitle'>
+      <text class="title">输入调拨匹数</text>
+      <input bindinput='bindShangjiangNumInput' value="{{shangjiangNum}}" type='number' bindchange='maxRollnum'></input>
+      <text class='meter'>匹</text>
+    </view>
+    <!-- <view class='printMeterAreaInputArea'>
+      <input bindinput='bindMeterInput' value="{{meter}}" type='number'></input>
+      <view class='meter'>米</view>
+    </view> -->
+    <view class='printBtnArea'>
+      <view bindtap='cancelNext' class='cancelBtn'>取消</view>
+      <view bindtap='toNext' class='cancelBtn'>已调拨</view>
+      <view bindtap='sureNext' class='sureBtn'>确定</view>
+    </view>
+  </view>
+  <!-- 检验员输入合格/次品米数弹框 -->
+  <view wx:if="{{showCheckBox}}">
+    <view class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
+    </view>
+    <view class='printMeterArea' style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;">
+      <view class='checkMeterAreaInputArea'>
+        <view class="printMeterAreaInputAreaTitle">合格数量：</view>
+        <input bindinput='bindOkMeterInput' value="{{okMeter}}" type='number'></input>
+        <view class='meter'>米</view>
+      </view>
+      <view class='checkMeterAreaInputArea' style="margin-top:10px;">
+        <view class="printMeterAreaInputAreaTitle">次品数量：</view>
+        <input bindinput='bindBadMeterInput' value="{{badMeter}}" type='number'></input>
+        <view class='meter'>米</view>
+      </view>
+      <view class='printBtnArea'>
+        <view bindtap='cancelCheck' class='cancelBtn'>取消</view>
+        <view bindtap='sureCheck' class='sureBtn'>确定</view>
+      </view>
+    </view>
+  </view>
+  <!-- 输入快递单号弹框 -->
+  <view wx:if="{{showSendBox}}" class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
+  </view>
+  <view wx:if="{{showSendBox}}" style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;" class='printMeterArea'>
+    <view class='checkMeterAreaInputArea'>
+        <view class="printMeterAreaInputAreaTitle">快递公司：</view>
+        <picker style="width:260rpx;" bindchange="bindCompanyNameChange" value="{{companyIndex}}" range="{{expressCompanyList}}">
+          <view class="picker">
+            {{expressCompanyList[companyIndex]}}
+          </view>
+        </picker>
+        <!-- <input bindinput='bindCompanyNameInput' value="{{companyName}}" type='text'></input> -->
+      </view>
+      <view class='checkMeterAreaInputArea' style="margin-top:10px;">
+        <view class="printMeterAreaInputAreaTitle">快递单号：</view>
+        <input bindinput='bindExpressNumberInput' value="{{expressNumber}}" type='number'></input>
+      </view>
+    <view class='printBtnArea'>
+      <view bindtap='cancelSend' class='cancelBtn'>取消</view>
+      <view bindtap='sureSend' class='sureBtn'>确定</view>
+    </view>
+  </view>
+  <!-- 输入退货备注弹框 -->
+  <view wx:if="{{showReturnBox}}" class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
+  </view>
+  <view wx:if="{{showReturnBox}}" style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;" class='printMeterArea'>
+    <view class='printMeterTitle'>输入退货备注</view>
+    <view class='printMeterAreaInputArea'>
+      <input bindinput='bindReturnNoteInput' style="font-size:32rpx" value="{{returnNote}}" type='text'></input>
+    </view>
+    <view class='printBtnArea'>
+      <view bindtap='cancelReturnNote' class='cancelBtn'>取消</view>
+      <view bindtap='sureReturnNote' class='sureBtn'>确定</view>
+    </view>
+  </view>
+  <!-- <view class="bottomDetail">© 2016-2020 zhidaoai.com. All rights reserved.</view> -->
+</view>

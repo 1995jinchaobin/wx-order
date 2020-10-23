@@ -1,0 +1,113 @@
+<view>
+  <!-- 选择联系人 -->
+  <view class="userInfo" bindtap="userChange">
+    <image class="logo" src="../images/order/orderLogo.png"></image>
+    <view wx:if="{{userInfo != ''}}">
+      <text>{{userInfo.contacts}}-{{userInfo.phone}}</text>
+      <view>{{userInfo.companyName}}</view>
+    </view>
+    <view wx:if="{{userInfo == ''}}">
+      <view>请选择联系人</view>
+    </view>
+    <image class="next" src="../images/order/Chevron.png"></image>
+  </view>
+  <view class="flowerBox">
+    <view class="title">花型</view>
+      <scroll-view scroll-x enable-flex class="msgBox">
+        <view wx:for="{{flowerList}}" wx:key = "index" class="scrollItem">
+          <image class="icon" src="../images/order/CloseIcon.png" id="{{index}}" bindtap="deleteFlower"></image>
+          <image src="{{wwwFileBaseUrl+item.customContent}}"></image>
+          <input disabled="{{!isType}}" placeholder-class="placeMsg" data-id="{{item.productId}}" bindblur="flowerNameChange" placeholder="输入花号" value="{{item.num}}" />
+        </view>
+        <view class="addBox"  bindtap="addFlowerList" style="top:{{flowerList.length > 0 ? '-48rpx' : '0'}}">
+          <image src="../images/order/add.png"></image>
+        </view>
+      </scroll-view>
+  </view>
+  <view class="formBox">
+    <view class="fabric">
+        <text>花型路径</text>
+        <input placeholder-class="input-placeholder" type="text" disabled="{{!isType}}" bindblur="filePathChange" placeholder="请输入花型路径" value="{{filePath}}"></input>
+    </view>
+    <view class="fabric" bindtap="mianLiaoClick">
+      <text>面料</text>
+      <picker bindchange="bindPickerChange" value="{{fabricIndex}}" disabled="{{!isType}}" range="{{fabricList}}" range-key="name">
+        <view class="picker">
+          {{fabricList[fabricIndex].name}}
+        </view>
+      </picker>
+      <image src="../images/order/Chevron.png"></image>
+    </view>
+    <view class="fabric">
+      <text>配置方案</text>
+      <picker bindchange="configChange" value="{{configIndex}}" disabled="{{!isType}}" range="{{configList}}" range-key="name">
+        <view class="picker">{{configList[configIndex].name}}</view>
+      </picker>
+      <image src="../images/order/Chevron.png"></image>
+    </view>
+    <view class="fabric">
+      <text>调色员</text>
+      <picker bindchange="colorBoyChange" value="{{colorBoyIndex}}" disabled="{{!isType}}" range="{{colorBoyList}}" range-key="name">
+        <view class="picker">{{colorBoyList[colorBoyIndex].name}}</view>
+      </picker>
+      <image src="../images/order/Chevron.png"></image>
+    </view>
+    <view class="fabric">
+      <text>面料来源</text>
+      <picker bindchange="bindfabricTypeChange" value="{{fabricTypeIndex}}" disabled="{{!isType}}" range="{{fabricType}}" range-key="name">
+        <view>
+          {{fabricType[fabricTypeIndex].name}}
+        </view>
+      </picker>
+      <image src="../images/order/Chevron.png"></image>
+    </view>
+    <view class="fabric">
+      <text>单价</text>
+      <input type="text" disabled="{{!isType}}" bindblur="setPrice" placeholder="元" value="{{price}}"></input>
+    </view>
+    <view class="fabric">
+      <text>打印数量</text>
+      <input type="text" disabled="{{!isType}}" bindblur="setSize" placeholder="米" value="{{size}}"></input>
+    </view>
+    <view class="fabric">
+      <text>是否加急</text>
+      <switch checked="{{expedite}}" bindchange="changeExpedite"/>
+    </view>
+    <view class="fabric">
+      <text>快递方式</text>
+      <picker bindchange="bindDeliceryChange" disabled="{{!isType}}" value="{{deliveryIndex}}" range="{{deliveryType}}" range-key="name">
+        <view>
+          {{deliveryType[deliveryIndex].name}}
+        </view>
+      </picker>
+      <image src="../images/order/Chevron.png"></image>
+    </view>
+
+    <view class="fabric">
+      <text>收货时间</text>
+      <picker mode="date" value="{{date}}"  start="2015-09-01" end="2100-09-01" bindchange="bindDateChange">
+        <view class="picker">
+          {{date}}
+        </view>
+      </picker>
+      <image src="../images/order/Chevron.png"></image>
+    </view>
+    <view class="fabric textBox" >
+      <text>备注</text>
+      <textarea bindblur="noteChange" disabled="{{!isType}}" value="{{note}}"></textarea>
+    </view>
+    <view class="fabric textBox" wx:if="{{!isType}}">
+      <text>备注</text>
+      <textarea bindblur="note2Change" value="{{note2}}"></textarea>
+    </view>
+  </view>
+  <view class="footBox">
+    <view class="priceBox">
+      <text>合计总价：</text>
+      <text>￥</text>
+      <text>{{allPrice}}</text>
+    </view>
+    <view wx:if="{{!isRevise}}" class="btn" bindtap="orderPost">确认提交</view>
+    <view wx:if="{{isRevise}}" class="btn" bindtap="orderRevise">确认修改</view>
+  </view>
+</view>
