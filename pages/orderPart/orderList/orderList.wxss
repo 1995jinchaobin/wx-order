@@ -338,3 +338,32 @@
   background-color: #C8C7CC;
   margin-top:39rpx;
 }
+.expressNumberArr{
+  /* background-color: red; */
+  top: 200rpx;
+  position: fixed;
+  left: 50%;
+  translate:-50%; 
+  width: 500rpx;
+  background-color: #fff;
+  color: #bbb;
+  /* padding:30rpx;  */
+}
+.expressNumberArrContent{
+  margin: 30rpx;
+}
+.expressNumberArrBot{
+  /* height: 100rpx; */
+  position: relative;
+  bottom: 0px;
+  width: 100%;
+  display: flex;
+}
+.borderL{
+  border-left: 1rpx solid #DDDDDD;
+}
+.expressNumber{
+  border-bottom:1rpx solid #DDDDDD;
+  margin-bottom: 10rpx;
+  padding-bottom: 18rpx;
+}

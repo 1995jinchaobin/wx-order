@@ -9,10 +9,17 @@
     <view class="fabric">
         <text>疵点米数</text>
         <input placeholder-class="input-placeholder" type="text"  bindblur="numChange" placeholder="米" value="{{num}}"></input>
+        <!-- <text class="hui">米</text> -->
     </view>
-    <view bindtap="showFlawSelectArea" class="fabric">
+    <view class="fabric">
         <text>疵点类型</text>
-        <input placeholder-class="input-placeholder" type="text" value="{{flawList[[flawIndex]].name}}（-{{flawList[flawIndex].num}}）"></input>
+        <picker value="{{flawListIndex}}" range="{{flawList}}" range-key="name" bindchange="bindPickerChange">
+          <view class="pickerselect">
+            <view>{{flawList[flawIndex].name}}</view>
+            <view wx-if="{{flawIndex!==0}}">-({{flawList[flawIndex].num}})</view>
+          </view>
+        </picker>
+        <!-- <input placeholder-class="input-placeholder" type="text" value="{{flawList[[flawIndex]].name}}（-{{flawList[flawIndex].num}}）"></input> -->
     </view>
     <!-- <view class="fabric">
       <text>疵点类型</text>
@@ -49,26 +56,35 @@
     <view class="btn" bindtap="orderPost">检验完成</view>
   </view>
   <!-- 疵点类型选择弹框 -->
-  <view class='flawSelectBg' wx:if="{{showFlawSelectArea}}" style="height:{{screenHeight-statusBarHeight}}px">
+  <!-- <view class='flawSelectBg' wx:if="{{showFlawSelectArea}}" style="height:{{screenHeight-statusBarHeight}}px">
   </view>
   <view class='flawSelectArea' wx:if="{{showFlawSelectArea}}">
     <view class='flawSelectArea'>
        <!-- 顶部按钮 -->
-      <view class='flawSelectBtnArea'>
+      <!-- <view class='flawSelectBtnArea'>
         <view bindtap='cancelSelect' class='cancelSelectBtn'>取消</view>
         <view bindtap='sureSelect' class='cancelSelectBtn sureSelectBtn'>确定</view>
-      </view>
+      </view> -->
+      <!-- <view>{{flawList[0].name}}</view> -->
       <!-- 疵点选择 -->
-      <scroll-view  scroll-y enable-flex class="flawBtnArea">
+      <!-- <scroll-view  scroll-y enable-flex class="flawBtnArea">
         <view bindtap="selectFlaw" class="flawDetailBtn {{index==flawIndex?'selectFlawDetailBtn':''}}" wx:for="{{flawList}}" data-msg="{{item}}" data-index="{{index}}">
         {{item.name}}
         </view>
-      </scroll-view>
+      </scroll-view> -->
+      <!-- <picker bindchange="configChange" value="{{configIndex}}" disabled="{{!isType}}" range="{{configList}}" range-key="name">
+        <view class="picker">{{configList[configIndex].name}}</view>
+      </picker> -->
+      <!-- <picker value="{{flawListIndex}}" range="{{flawList}}" range-key="name" bindchange="bindPickerChange">
+        <view class="picker">
+          {{flawList[0].name}}
+        </view>
+      </picker> -->
       <!-- <view class="flawBtnArea">
         
       </view> -->
-    </view>
-  </view>
+    <!-- </view>
+  </view> -->
 
   <view wx:if="{{showInputPishu}}">
     <view class='showInputPishu' style="height:{{screenHeight-statusBarHeight}}px">

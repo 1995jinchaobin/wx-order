@@ -68,7 +68,7 @@
 .fabric picker{
   position: absolute;
   width: 300rpx;
-  right: 60rpx;
+  right: 0;
   text-align: right;
 }
 .picker{
@@ -173,7 +173,7 @@
   text-align: right;
   margin-left: auto;
 }
-.flawSelectBg{
+/* .flawSelectBg{
   width: 100%;
   opacity: 0.75;
   background: #000000;
@@ -181,8 +181,8 @@
   top: 0px;
   left: 0px;
   z-index: 2;
-}
-.flawSelectArea{
+} */
+/* .flawSelectArea{
   width: 750rpx;
   height: 608rpx;
   border-radius: 4rpx;
@@ -192,26 +192,25 @@
   opacity: 1;
   bottom: 0rpx;
   z-index: 3;
-}
-.flawSelectBtnArea{
+} */
+/* .flawSelectBtnArea{
   display: flex;
   border-bottom: 2rpx solid #EEEEEE;
   height: 78rpx;
   line-height: 78rpx;
   z-index: 4;
-}
-.cancelSelectBtn{
+} */
+/* .cancelSelectBtn{
   font-size: 30rpx;
   color: #999999;
   text-align: center;
   margin-left: 32rpx;
-}
-.sureSelectBtn{
+} */
+/* .sureSelectBtn{
   color: #108EE9;
   margin-left:566rpx;
-}
-.flawBtnArea{
-  /* width: 640rpx; */
+} */
+/* .flawBtnArea{
   margin-left: 58rpx;
   margin-top: 56rpx;
   font-size: 28rpx;
@@ -222,7 +221,7 @@
   flex-wrap: wrap;
   overflow-y: scroll;
   height: 400rpx;
-}
+} */
 .flawDetailBtn{
   width: 200rpx;
   height: 64rpx;
@@ -299,4 +298,12 @@
   font-size: 36rpx;
   color: #108EE9;
   letter-spacing: 0.58rpx;
+}
+.pickerselect{
+  color: #ccc;
+  display: flex;
+  /* position: absolute; */
+  align-items: center;
+  margin-right: 30rpx;
+  justify-content: flex-end;
 }

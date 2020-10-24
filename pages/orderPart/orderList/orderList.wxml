@@ -33,8 +33,8 @@
       <!-- 底部进度条 -->
       <view style="position:relative;">
         <view style="display:flex;position:absolute;top:0rpx;">
-          <view style="width:{{item.type<=1&&item.type!=100?'80':item.type<=3&&item.type!=100?'210':item.type<=4&&item.type!=100?'350':item.type<=5&&item.type!=100?'480':(item.type==7||item.type==8&&item.type!=100)?'680':item.type==100?'0':'600'}}rpx;" class="nowStateChecked"></view>
-          <view style="width:{{item.type<=1&&item.type!=100?'600':item.type<=3&&item.type!=100?'470':item.type<=4&&item.type!=100?'330':item.type<=5&&item.type!=100?'200':(item.type==7||item.type==8&&item.type!=100)?'0':item.type==100?'680':'80'}}rpx;" class="nowStateUnchecked"></view>
+          <view style="width:{{item.type<=1&&item.type!=100?'80':item.type<=3&&item.type!=100?'210':item.type<=4&&item.type!=100?'350':item.type<=5&&item.type!=100?'480':(item.type==13&&item.type!=100)?'680':item.type==100?'0':'600'}}rpx;" class="nowStateChecked"></view>
+          <view style="width:{{item.type<=1&&item.type!=100?'600':item.type<=3&&item.type!=100?'470':item.type<=4&&item.type!=100?'330':item.type<=5&&item.type!=100?'200':(item.type==13&&item.type!=100)?'0':item.type==100?'680':'80'}}rpx;" class="nowStateUnchecked"></view>
         </view>
         <view  style="display:flex;justify-content: space-around;position:absolute;top:-8rpx;">
           <view class="stateDetail" style="margin-left:70rpx;">
@@ -54,8 +54,8 @@
             <view style="color: {{item.type>=6?'#333333':'#999999'}};"  class="stateText">检验</view>
           </view>
           <view class="stateDetail" style="margin-left:90rpx;">
-            <image class="nowStateImg" src="{{item.type==7||item.type==8&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
-            <view style="color: {{item.type==7||item.type==8?'#333333':'#999999'}};"  class="stateText">出货</view>
+            <image class="nowStateImg" src="{{item.type>=13&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>=13?'#333333':'#999999'}};"  class="stateText">出货</view>
           </view>
         </view>
       </view>
@@ -80,9 +80,12 @@
         <view class="needTimeDetail">{{item.onlinePrinter==null?'无':item.onlinePrinter}}</view>
       </view>
       <!-- 已发货状态显示快递信息 -->
-      <view class="expressInfo orderNeedTime" style="margin-top:6rpx;" wx:if="{{(item.type==7)&&(role==0||role==1||role==2||role==3)&&item.type!=100}}">
+      <view class="expressInfo orderNeedTime" style="margin-top:6rpx;" wx:if="{{(item.type==13)&&(role==0||role==1||role==2||role==3)&&item.type!=100}}">
         <view>物流：</view>
-        <view class="needTimeDetail">{{item.expressType}} {{item.expressNumber}}</view>
+        <view class="needTimeDetail">
+          <text wx:if="{{item.expressType!==null}}">{{item.expressType}} </text>
+          <text>{{item.expressNumber}}</text>
+        </view>
       </view>
       <!-- 分割线 -->
       <view class="line" style="margin-top:{{((item.type==8)&&(role==0||role==1||role==2||role==3)&&item.type!=100)||((item.type==7)&&(role==0||role==1||role==2||role==3)&&item.type!=100)?70:39}}rpx;"></view>
@@ -120,14 +123,16 @@
         <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}"  data-message="{{item.note}}" wx:if="{{item.type==4 && (role==6||role==2)&&item.type!=100}}" catchtap="handlerSteam">蒸化</view>
         <!-- 已蒸化状态，显示检验按钮 -->
         <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}" wx:if="{{item.type==5 && (role==6||role==2)&&item.type!=100}}" catchtap="handlerCheck">检验</view>
-        <!-- 已检验状态，显示发货审核按钮 -->
-        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==6 && (role==1||role==2)&&item.type!=100}}" catchtap="handlerSendCheck">发货审核</view>
-        <!-- 发货审核通过状态，显示发货按钮 仓库管理员 -->
-        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==9 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerSend">发货</view>
-        <!-- 已发货状态，如果是业务员角色，显示退货按钮 -->
-        <view style="top:30rpx"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-id="{{item.id}}" data-message="{{item.note}}" wx:if="{{(item.type==7) && (role==1||role==2)&&item.type!=100}}" catchtap="handlerReturn">退货</view>
-        <!-- 已发货状态，如果是业务员/客户角色，显示评论按钮 -->
-        <view style="top:30rpx"  class="toPay leftButton"  style="right:{{role==1?230:32}}rpx;background-color:#{{role==1?'F1F2F6':'108EE9'}};color:#{{role==1?'646D7D':'FFFFFF'}}" data-id="{{item.id}}" data-message="{{item.note}}" wx:if="{{(item.type==7) && (((role==2||role==1)&&(item.comment2==''||item.comment2==null))||(role==0&&(item.comment1==''||item.comment1==null))||(role==2&&item.type==7&&item.fkUserId==userId&&item.comment2==''))&&item.type!=100}}" catchtap="goToRate">评论</view>
+        <!-- 点击发货按钮，显示发货审核按钮，业务员 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==7 && (role==1||role==2)&&item.type!=100}}" catchtap="handlerSendCheck">发货审核</view>
+        <!-- 检验完成，显示发货按钮，仓管 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==6 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerSend">发货</view>
+        <!-- 发货审核通过状态，显示快递单号按钮 仓库管理员 -->
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==10 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerkuaidiForm">快递单号</view>
+        <!-- 发货审核通过状态，如果是业务员角色，显示退货按钮 -->
+        <view style="top:30rpx"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-id="{{item.id}}" data-message="{{item.note}}" wx:if="{{(item.type==13) && (role==1||role==2)&&item.type!=100}}" catchtap="handlerReturn">退货</view>
+        <!-- 发货审核通过状态，如果是业务员/客户角色，显示评论按钮 -->
+        <view style="top:30rpx"  class="toPay leftButton"  style="right:{{role==1?230:32}}rpx;background-color:#{{role==1?'F1F2F6':'108EE9'}};color:#{{role==1?'646D7D':'FFFFFF'}}" data-id="{{item.id}}" data-message="{{item.note}}" wx:if="{{(item.type==13) && (((role==2||role==1)&&(item.comment2==''||item.comment2==null))||(role==0&&(item.comment1==''||item.comment1==null))||(role==2&&item.type==7&&item.fkUserId==userId&&item.comment2==''))&&item.type!=100}}" catchtap="goToRate">评论</view>
       </view>
     </view>
   </view>
@@ -147,7 +152,6 @@
       <view bindtap='surePrint' class='sureBtn'>确定</view>
     </view>
   </view>
-
   <!-- 输入调拨米数弹框 -->
   <view wx:if="{{showNextBox}}" class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
   </view>
@@ -230,6 +234,7 @@
       </view>
     <view class='printBtnArea'>
       <view bindtap='cancelSend' class='cancelBtn'>取消</view>
+      <view bindtap='nextSend' class='sureBtn'>下一个</view>
       <view bindtap='sureSend' class='sureBtn'>确定</view>
     </view>
   </view>
@@ -246,5 +251,22 @@
       <view bindtap='sureReturnNote' class='sureBtn'>确定</view>
     </view>
   </view>
+  <!-- 确认快递单号 -->
+  <view wx:if="{{showSubmitCourier}}" class='printMeterBg' style="height:{{screenHeight-statusBarHeight}}px">
+  </view>
+  <view wx:if="{{showSubmitCourier}}" class="expressNumberArr">
+    <view wx:for="{{expressNumberArr}}" wx:for-index="index" wx:key="index" data-index="{{index}}" class="expressNumberArrContent">
+      <view>快递类型：{{item.companyName}}</view>
+      <view class="{{expressNumberArr.length > index+1?'expressNumber':''}}">快递单号：{{item.expressNumber}}</view>
+    </view>
+    <view class='expressNumberArrBot'>
+      <view bindtap='cancelSendbtn' class='cancelBtn borderL'>重新填写</view>
+      <view bindtap='sureSendbtn' class='sureBtn'>确定</view>
+    </view>
+  </view>
+
+  <!-- <view wx:for="{{typeList}}" wx:for-index="index" class="typeBtn {{index==selectTypeIndex?'selectTypeBtn':''}}" data-index="{{index}}" bindtap="changeType" wx:key="index">
+      {{item}}
+    </view> -->
   <!-- <view class="bottomDetail">© 2016-2020 zhidaoai.com. All rights reserved.</view> -->
 </view>

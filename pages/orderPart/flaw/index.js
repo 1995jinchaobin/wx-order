@@ -11,13 +11,14 @@ Page({
     num:'',
     flawName:'',
     flawList:[{id:0,name:'请选择疵点类型'}],
+    // 瑕疵类型索引
     flawIndex:0,
     flawInfoList:[
-      { pishu: 1, xiaci: []},
+      { pishu: '', xiaci: []}
     ],
     orderId:0,
     flawCountNum:0,
-    showFlawSelectArea:false,
+    // showFlawSelectArea:false,
     // 当前匹数
     piNum:1,
     flawRollList:[],
@@ -26,7 +27,8 @@ Page({
     // 合格米数
     okMeter:'',
     // 次品米数
-    badMeter:''
+    badMeter:'',
+    arrIndex:0,
   },
   //疵点米数
   numChange(e){
@@ -49,11 +51,22 @@ Page({
     }
     request.request('/flaw', data, 'get', '', (res) => {
       if (res.data.data.list.length > 0) {
+        console.log(res.data.data.list)
+        const arr = this.data.flawList
+        const hebingarr = arr.concat(res.data.data.list)
+        console.log(hebingarr)
         _this.setData({
-          flawList: res.data.data.list
+          flawList: hebingarr
         })
       }
     })
+  },
+  // 选择瑕疵类型
+  bindPickerChange(e) {
+    this.setData({
+      flawIndex: e.detail.value
+    })
+    console.log(e.detail.value)
   },
   //点击提交疵点
   addFlaw(e){
@@ -94,12 +107,12 @@ Page({
         flawCountNum: parseFloat(this.data.flawCountNum) + parseFloat(flawInfo.reduceScore)
       })
       // console.log(this.data.flawInfoList[this.data.piNum - 1])
-      let beforListXiaci = this.data.flawInfoList[this.data.piNum - 1].xiaci
+      let beforListXiaci = this.data.flawInfoList[this.data.arrIndex].xiaci
       // console.log(beforListXiaci)
       // console.log(flawInfo)
       beforListXiaci.push(flawInfo)
       const addListXiaci = this.data.flawInfoList
-      addListXiaci[this.data.piNum - 1].xiaci = beforListXiaci
+      addListXiaci[this.data.arrIndex].xiaci = beforListXiaci
       // console.log(addListXiaci)
       // let a = flawInfoList[].push(flawInfo)
 
@@ -116,40 +129,6 @@ Page({
   pishuFinish () {
     this.setData({
       showInputPishu: true
-    })
-    // console.log(this.data.flawInfoList[this.data.piNum - 1])
-    const arr = this.data.flawInfoList[this.data.piNum - 1].xiaci
-    let flawStr = ""
-    for (let i = 0; i < arr.length; i++) {
-      flawStr += arr[i].fkFlawId + "&"
-        + arr[i].flawName + "&"
-        + arr[i].num + "&"
-        + arr[i].reduceScore + "&"
-        + this.data.piNum + ";"
-    }
-    // console.log(flawStr)
-    const data = {
-      id: this.data.orderId,
-      flawStr: flawStr
-    }
-    //请求
-    request.request('/order/flaw', data, 'post', '', (res) => {
-      // console.log(res)
-      // if (res.data.code===0){
-      //   request.request('/flow/' + this.data.orderId, {
-      //     type: 6,
-      //     id: this.data.orderId
-      //     },
-      //     'POST', '', (res) => {
-      //       console.log(res)
-      //     }
-      //   )
-      // }
-      if (res.data.code === 0) {
-        this.setData({
-          showInputPishu: true
-        })
-      }
     })
   },
   // 合格米数输入框
@@ -174,40 +153,67 @@ Page({
   },
   // 合格米数输入确定按钮
   sureCheck(){
-    // request.request('/order/flaw', data, 'post', '', (res) => {
-    //   console.log(res)
-      // if (res.data.code===0){
-        request.request('/flow/' + this.data.orderId, {
-          type: 6,
-          id: this.data.orderId,
-          okMeter:this.data.okMeter,
-          badMeter:this.data.badMeter
-          },
-          'POST', '', (res) => {
-            // console.log(res)
-            if (res.data.code===0){
-              const afterPinum = this.data.piNum + 1
-              // { pishu: 1, xiaci: [] }
-              let arr = this.data.flawInfoList
-              arr.push({
-                pishu: afterPinum,
-                xiaci:[]
-              })
-              this.setData({
-                okMeter:'',
-                badMeter:'',
-                piNum: afterPinum,
-                showInputPishu: false,
-                flawInfoList: arr,
-                num:''
-              })
-              // console.log(this.data.flawInfoList)
-            }
-          }
-        )
-      // }
-    // })
+    const xiaciLength = this.data.flawInfoList[this.data.arrIndex].xiaci.length
+    if (xiaciLength > 0){
+      const arr = this.data.flawInfoList[this.data.arrIndex].xiaci
+      let flawStr = ""
+      for (let i = 0; i < arr.length; i++) {
+        flawStr += arr[i].fkFlawId + "&"
+          + arr[i].flawName + "&"
+          + arr[i].num + "&"
+          + arr[i].reduceScore + "&"
+          + this.data.piNum + ";"
+        }
+      const data = {
+        id: this.data.orderId,
+        flawStr: flawStr
+      }
+      //请求
+      request.request('/order/flaw', data, 'POST', '', (res) => {
+      })
+    }
+    if (this.data.badMeter===''){
+      this.setData({
+        badMeter:0
+      })
+    }
+    if (this.data.okMeter === ''){
+      wx.showToast({
+        title: '请输入打印米数',
+        icon: 'none'
+      })
+      return
+    }
+    request.request('/flow/' + this.data.orderId, {
+      type: 6,
+      id: this.data.orderId,
+      okMeter: this.data.okMeter,
+      badMeter: this.data.badMeter
+    },
+      'POST', '', (res) => {
+        // console.log(res)
+        if (res.data.code === 0) {
+          const afterPinum = this.data.piNum + 1
+          // { pishu: 1, xiaci: [] }
+          let arr = this.data.flawInfoList
+          arr.push({
+            pishu: afterPinum,
+            xiaci: []
+          })
+          this.setData({
+            okMeter: '',
+            badMeter: '',
+            piNum: afterPinum,
+            showInputPishu: false,
+            flawInfoList: arr,
+            num: ''
+          })
+          // console.log(this.data.flawInfoList)
+        }
+      }
+    )
   },
+  // 检验完成
   orderPost(){
     // let flawStr = "";
     // for (let i = 0; i < this.data.flawInfoList.length;i++){
@@ -235,25 +241,57 @@ Page({
     })
 
   },
-  cancelSelect(){
-    this.setData({
-      showFlawSelectArea:false
-    })
-  },
-  sureSelect(){
-    this.setData({
-      showFlawSelectArea: false
-    })
-    //this.orderPost();
-  },
+  // cancelSelect(){
+  //   this.setData({
+  //     showFlawSelectArea:false
+  //   })
+  // },
+  // sureSelect(){
+  //   this.setData({
+  //     showFlawSelectArea: false
+  //   })
+  //   //this.orderPost();
+  // },
   selectFlaw(e){
     this.setData({
       flawIndex:e.currentTarget.dataset.index
     })
   },
-  showFlawSelectArea(){
-    this.setData({
-      showFlawSelectArea: true
+  // showFlawSelectArea(){
+  //   this.setData({
+  //     showFlawSelectArea: true
+  //   })
+  // },
+  // 获取检测匹数
+  getRollNum (a) {
+    // request.request('/inventory/out/xcx' + this.data.orderId, {
+    //   type: 12,
+    //   id: this.data.orderId,
+    // }, 'POST', '', (res) => {
+    //   // console.log(res)
+    //   wx.navigateTo({
+    //     url: '/pages/orderPart/orderList/orderList',
+    //   })
+    // })
+    console.log(a)
+    request.request('/inventory/out/xcx', {fkOrderId:a}, 'get', '', (res) => {
+      // if (res.data.data.list.length > 0) {
+      //   console.log(res.data.data.list)
+      //   const arr = this.data.flawList
+      //   const hebingarr = arr.concat(res.data.data.list)
+      //   console.log(hebingarr)
+      const arr = this.data.flawInfoList
+      arr[0].pishu = res.data.data.rollNum + 1
+      this.setData({
+        piNum: res.data.data.rollNum + 1,
+        flawInfoList: arr
+      })
+      // flawInfoList: [
+        // { pishu: '', xiaci: []},
+      // ],
+      // const arr = this.data.flawInfoList
+      // arr[0].pishu = res.data.data.rollNum + 1
+      console.log(res)
     })
   },
   /**
@@ -267,6 +305,7 @@ Page({
         orderId: options.orderId
       })
     }
+    this.getRollNum(this.data.orderId)
     this.getFlawList();
   },
 

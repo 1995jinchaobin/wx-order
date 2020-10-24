@@ -19,7 +19,7 @@ Page({
     total:0,
     role:0,
     userId:0,
-    statusList: ['审核不通过','待审核','已审核','已上浆','打印中','已打印','已蒸化','已检验','已发货','已退货','已发货审核'],
+    statusList: ['审核不通过', '待审核', '已审核', '已上浆', '打印中', '已打印', '已蒸化', '已检验', '发货审核中', '已退货', '', '已发货审核', '', '','已发货'],
     total:0,
     role:0,
     machineList:[],
@@ -74,7 +74,11 @@ Page({
     // 上浆调拨米数输入值
     shangjiangNum:'',
     // 打印米数
-    dayinMeter:''
+    dayinMeter:'',
+    // 快递单号参数
+    expressNumberAll:'',
+    showSubmitCourier:false,
+    expressNumberArr:[]
   },
   back() {
     wx.reLaunch({
@@ -83,6 +87,8 @@ Page({
   },
   //点击顶部分类
   changeType(e){
+    console.log(e)
+    console.log(e.currentTarget.dataset['index'])
     this.setData({
       selectTypeIndex: e.currentTarget.dataset['index']
     })
@@ -736,7 +742,7 @@ Page({
       }
     })
   },
-  //点击检验显示检验米数输入框
+  //点击检验按钮跳转瑕疵记录页面
   handlerCheck(e) {
     this.setData({
       orderId: e.currentTarget.dataset.id
@@ -823,9 +829,9 @@ Page({
       badMeter: e.detail.value
     })
   },
-  //点击发货审核
+  //点击发货审核按钮
   handlerSendCheck(e) {
-    let _this = this;
+    let _this = this
     wx.showModal({
       title: '提示',
       content: '确认该订单通过发货审核吗?',
@@ -836,14 +842,7 @@ Page({
           })
           request.request('/flow/' + e.currentTarget.dataset.id, {
             type: 9,
-            note: '',
-            meter: 0,
-            okMeter: 0,
-            badMeter: 0,
-            expressNumber: '',
             id: e.currentTarget.dataset.id,
-            machineId: 0,
-            machineName: ''
           },
             'POST', 'orderPart', (res) => {
               wx.hideLoading();
@@ -854,6 +853,7 @@ Page({
                   _this.getList();
                 }
               })
+              console.log(res)
             })
         } else if (res.cancel) {
         }
@@ -868,30 +868,70 @@ Page({
       companyName:this.data.expressCompanyList[e.detail.value]
     })
   },
-  //点击发货显示快递单号输入框
+  //点击发货按钮
   handlerSend(e) {
-    this.setData({
-      orderId: e.currentTarget.dataset.id
+    // this.setData({
+    //   orderId: e.currentTarget.dataset.id
+    // })
+    // this.setData({
+    //   companyName: '自提'
+    // })
+    // this.setData({
+    //   expressNumber: ''
+    // })
+    // //显示弹框
+    // this.setData({
+    //   showSendBox: true
+    // })
+    const _this = this
+    wx.showModal({
+      title: '提示',
+      content: '确认该订单进行发货吗?',
+      success(res) {
+        if (res.confirm) {
+          wx.showLoading({
+            title: '正在提交'
+          })
+          const data = {
+            type: 7,
+            id: e.currentTarget.dataset.id
+          }
+          request.request('/flow/' + e.currentTarget.dataset.id, data,
+            'POST', 'orderPart', (res) => {
+              wx.hideLoading();
+              wx.showToast({
+                title: res.data.message,
+                duration: 2000,
+                success: () => {
+                  _this.getList();
+                }
+              })
+              // if()
+              console.log(res)
+            }
+          )
+        }
+      }
     })
+  },
+  // 点击快递单号
+  handlerkuaidiForm(e) {
     this.setData({
-      companyName: '自提'
-    })
-    this.setData({
-      expressNumber: ''
-    })
-    //显示弹框
-    this.setData({
+      orderId: e.currentTarget.dataset.id,
       showSendBox: true
     })
   },
   //快递单号输入框取消按钮
   cancelSend() {
     this.setData({
+      expressNumberAll:'',
+      expressNumberArr: [],
+      expressNumber:'',
       showSendBox: false
     })
   },
-  //快递单号输入框确认按钮
-  sureSend() {
+  // 快递单号下一个按钮
+  nextSend() {
     let _this = this;
     //判断
     if (_this.data.companyName == '') {
@@ -899,41 +939,146 @@ Page({
         title: '请输入快递公司',
         icon: 'none'
       })
-    } else if (_this.data.companyName !='自提'&&_this.data.expressNumber == '') {
+    } else if (_this.data.companyName != '自提' && _this.data.expressNumber == '') {
       wx.showToast({
         title: '请输入快递单号',
         icon: 'none'
       })
-    }else {
-      wx.showLoading({
-        title: '正在提交'
-      })
-      request.request('/flow/' + _this.data.orderId, {
-        type: 7,
-        note: '',
-        meter: 0,
-        okMeter: 0,
-        badMeter: 0,
-        expressType: _this.data.companyName,
-        expressNumber: _this.data.expressNumber,
-        machineId: 0,
-        machineName: '',
-        id: _this.data.orderId
-      },
-        'POST', 'orderPart', (res) => {
-          wx.hideLoading();
-          wx.showToast({
-            title: res.data.message,
-            duration: 2000,
-            success: () => {
-              _this.setData({
-                showSendBox: false
-              })
-              _this.getList();
-            }
-          })
-        })
+    } else {
+      // let expressNumber = this.data.expressNumberAll
+      // const companyName = this.data.companyName
+      // const expressNumber1 = this.data.expressNumber
+      // let expressNumberArr = this.data.expressNumberArr
+      // if (this.data.companyName==='自提') {
+      //   expressNumber = expressNumber + companyName + ';'
+      //   expressNumberArr.push({ companyName: companyName, expressNumber:''})
+      // } else {
+      //   expressNumber = expressNumber + companyName + ':' + expressNumber1 + ';'
+      // }
+      // this.setData({
+      //   expressNumberAll: expressNumber,
+      //   expressNumber:'',
+      //   expressNumberArr: expressNumberArr
+      // })
+      // console.log(this.data.expressNumberAll)
+      this.addExpressNumber()
     }
+  },
+  // 添加快递单数组
+  addExpressNumber() {
+    let expressNumber = this.data.expressNumberAll
+    const companyName = this.data.companyName
+    const expressNumber1 = this.data.expressNumber
+    let expressNumberArr = this.data.expressNumberArr
+    if (this.data.companyName==='自提') {
+      expressNumber = expressNumber + companyName + ';'
+      expressNumberArr.push({ companyName: companyName, expressNumber:''})
+    } else {
+      expressNumber = expressNumber + companyName + ':' + expressNumber1 + ';'
+      expressNumberArr.push({ companyName: companyName, expressNumber: expressNumber1})
+    }
+    this.setData({
+      expressNumberAll: expressNumber,
+      expressNumber:'',
+      expressNumberArr: expressNumberArr
+    })
+  },
+  // 快递单重新填写
+  cancelSendbtn() {
+    this.setData({
+      expressNumberAll: '',
+      expressNumberArr: [],
+      showSubmitCourier: false,
+      expressNumber: ''
+    })
+  },
+  //快递单号输入框确认按钮弹出确定框
+  sureSend() {
+    // console.log(this.data.expressNumberAll)
+    if (this.data.companyName == '') {
+      wx.showToast({
+        title: '请输入快递公司',
+        icon: 'none'
+      })
+    } else if (this.data.companyName != '自提' && this.data.expressNumber == '') {
+      wx.showToast({
+        title: '请输入快递单号',
+        icon: 'none'
+      })
+    } else{
+      this.addExpressNumber()
+      this.setData({
+        showSendBox: false,
+        showSubmitCourier: true
+      })
+    }
+    console.log(this.data.expressNumberAll)
+    // let _this = this;
+    //判断
+    // if (_this.data.companyName == '') {
+    //   wx.showToast({
+    //     title: '请输入快递公司',
+    //     icon: 'none'
+    //   })
+    // } else if (_this.data.companyName !='自提'&&_this.data.expressNumber == '') {
+    //   wx.showToast({
+    //     title: '请输入快递单号',
+    //     icon: 'none'
+    //   })
+    // }else {
+    //   wx.showLoading({
+    //     title: '正在提交'
+    //   })
+    //   request.request('/flow/' + _this.data.orderId, {
+    //     type: 7,
+    //     note: '',
+    //     meter: 0,
+    //     okMeter: 0,
+    //     badMeter: 0,
+    //     expressType: _this.data.companyName,
+    //     expressNumber: _this.data.expressNumber,
+    //     machineId: 0,
+    //     machineName: '',
+    //     id: _this.data.orderId
+    //   },
+    //     'POST', 'orderPart', (res) => {
+    //       wx.hideLoading();
+    //       wx.showToast({
+    //         title: res.data.message,
+    //         duration: 2000,
+    //         success: () => {
+    //           _this.setData({
+    //             showSendBox: false
+    //           })
+    //           _this.getList();
+    //         }
+    //       })
+    //     })
+    // }
+  },
+  // 快递预览确定
+  sureSendbtn () {
+    const _this = this
+    request.request('/flow/' + this.data.orderId, {
+      type:13,
+      id: this.data.orderId,
+      expressNumber: this.data.expressNumberAll
+    },
+      'POST', 'orderPart', (res) => {
+        wx.hideLoading();
+        wx.showToast({
+          title: res.data.message,
+          duration: 2000,
+          success: () => {
+            _this.setData({
+              showSubmitCourier: false
+            })
+            _this.getList();
+          }
+        })
+        console.log(res)
+      }
+    )
   },
   bindExpressNumberInput(e) {
     this.setData({
