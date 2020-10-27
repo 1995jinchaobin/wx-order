@@ -36,16 +36,18 @@
     </view>
   </view>
   <!-- 瑕疵列表 -->
-  <view class="flex xiaciList"  wx:for="{{flawInfoList}}" wx:for-index="indexOne" wx:key="indexOne">
-    <view class="xiaciPishu">第{{item.pishu}}匹</view>
-    <view class="xiaciListXian"></view>
-    <view class="xiaciContent">
-      <view class="flawInfoArea" wx:for="{{item.xiaci}}" wx:for-index="index" wx:key="index">
-        <view class="left">第{{item.num}}米</view>
-        <view class="right">{{item.flawName}}（-{{item.reduceScore}}）</view>
+  <scroll-view class="pro_list" scroll-y>
+    <view class="flex xiaciList"  wx:for="{{flawInfoList}}" wx:for-index="indexOne" wx:key="indexOne">
+      <view class="xiaciPishu">第{{item.pishu}}匹</view>
+      <view class="xiaciListXian"></view>
+      <view class="xiaciContent">
+        <view class="flawInfoArea" wx:for="{{item.xiaci}}" wx:for-index="index" wx:key="index">
+          <view class="left">第{{item.num}}米</view>
+          <view class="right">{{item.flawName}}（-{{item.reduceScore}}）</view>
+        </view>
       </view>
     </view>
-  </view>
+  </scroll-view>
   <!-- 统计 -->
   <view class="footBox">
     <view class="priceBox">

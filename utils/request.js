@@ -37,6 +37,7 @@ const request = (url, data, method,path,callbackMethod)=> {
           }
         });
       } else {
+        // console.log(res)
         wx.showToast({
           title: res.data.message,
           icon: 'none',

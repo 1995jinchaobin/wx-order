@@ -307,3 +307,6 @@
   margin-right: 30rpx;
   justify-content: flex-end;
 }
+.pro_list{
+  margin-bottom: 120rpx;
+}
