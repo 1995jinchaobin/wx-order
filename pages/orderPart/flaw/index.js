@@ -210,15 +210,14 @@ Page({
     }
     //请求
     request.request('/flow/' + this.data.orderId,{
-      type: 12,
-      id: this.data.orderId,
+      type: 12
+      // id: this.data.orderId,
     } ,'POST', '',(res) => {
       // console.log(res)
       wx.navigateTo({
         url: '/pages/orderPart/orderList/orderList',
       })
     })
-
   },
   selectFlaw(e){
     this.setData({

@@ -45,6 +45,7 @@ Page({
             rows: 50
           },
           success(res) {
+            // console.log(res)
             wx.hideLoading();
             let result = JSON.parse(res.data);
             if(result.code == 0){
@@ -98,7 +99,6 @@ Page({
       let userInfo = wx.getStorageSync('userInfo');
       this.setData({
         userInfo: userInfo
-        
       })
     }else{
       wx.showToast({
@@ -115,7 +115,7 @@ Page({
     }
   },
   changeImg(){
-    console.log('---')
+    // console.log('---')
   },
 
   /**

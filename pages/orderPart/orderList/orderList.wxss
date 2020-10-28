@@ -296,6 +296,9 @@
   color: #333333;
   letter-spacing: -0.12rpx;
   margin-top: -10rpx;
+  position: absolute;
+  margin-left: -15rpx;
+  white-space: nowrap;
 }
 .stateDetail{
   text-align: center;

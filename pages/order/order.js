@@ -216,6 +216,7 @@ Page({
           }
           index++;
         })
+        console.log(fabricIndex)
         _this.setData({
           fabricIndex: fabricIndex
         })
@@ -570,9 +571,9 @@ Page({
     }
     console.log(data)
     if(this.data.bottonClicked){
-      // this.setData({
-      //   bottonClicked: false
-      // })
+      this.setData({
+        bottonClicked: false
+      })
       request.request(this.data.requestUrl.order,data,'post','',(result)=>{
         console.log(result)
         let resultCode = result.data.code;
@@ -713,6 +714,7 @@ Page({
     })
     if(options.flowerInfo){
       let flowerList = JSON.parse(options.flowerInfo);
+      // console.log(flowerList)
       let flowerListResult=[];
       flowerList.forEach(item=>{
         item.num = item.picName;
@@ -724,9 +726,7 @@ Page({
       })
     }
     if(options.again){
-      console.log(1)
       let orderInfo = JSON.parse(options.again);
-      console.log(2)
       this.setData({
         againIndex: orderInfo.fabricName,
         againConfig: orderInfo.configName,
@@ -842,7 +842,10 @@ Page({
       })
       wx.removeStorageSync("orderInfo");
       //如果没有选择联系人，则查询工厂面料
-      this.getFabricList({id:null})
+      // this.getFabricList({id:null})
+    }
+    if (JSON.stringify(options)==='{}'){
+      this.getFabricList({ id: null })
     }
   },
 

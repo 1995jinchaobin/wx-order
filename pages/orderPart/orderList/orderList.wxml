@@ -33,11 +33,11 @@
       <!-- 底部进度条 -->
       <view style="position:relative;">
         <view style="display:flex;position:absolute;top:0rpx;">
-          <view style="width:{{item.type<=1&&item.type!=100?'80':item.type<=3&&item.type!=100?'210':item.type<=4&&item.type!=100?'350':item.type<=5&&item.type!=100?'480':(item.type==13&&item.type!=100)?'680':item.type==100?'0':'600'}}rpx;" class="nowStateChecked"></view>
-          <view style="width:{{item.type<=1&&item.type!=100?'600':item.type<=3&&item.type!=100?'470':item.type<=4&&item.type!=100?'330':item.type<=5&&item.type!=100?'200':(item.type==13&&item.type!=100)?'0':item.type==100?'680':'80'}}rpx;" class="nowStateUnchecked"></view>
+          <view style="width:{{item.type<=1&&item.type!=100?'70':item.type<=3&&item.type!=100?'180':item.type<=4&&item.type!=100?'300':item.type<=5&&item.type!=100?'400':(item.type<=6&&item.type!=100)?'530':(item.type<=10&&item.type!=100)?'630':(item.type<=13&&item.type!=100)?'670':item.type==100?'0':'600'}}rpx;" class="nowStateChecked"></view>
+          <view style="width:{{item.type<=1&&item.type!=100?'610':item.type<=3&&item.type!=100?'500':item.type<=4&&item.type!=100?'380':item.type<=5&&item.type!=100?'280':(item.type<=6&&item.type!=100)?'150':(item.type==10&&item.type!=100)?'50':(item.type<=13&&item.type!=100)?'0':item.type==100?'680':'80'}}rpx;" class="nowStateUnchecked"></view>
         </view>
         <view  style="display:flex;justify-content: space-around;position:absolute;top:-8rpx;">
-          <view class="stateDetail" style="margin-left:70rpx;">
+          <view class="stateDetail" style="margin-left:50rpx;">
             <image class="nowStateImg" src="{{item.type>=2&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
             <view style="color: {{item.type>=2?'#333333':'#999999'}};" class="stateText">上浆</view>
           </view>
@@ -54,8 +54,16 @@
             <view style="color: {{item.type>=6?'#333333':'#999999'}};"  class="stateText">检验</view>
           </view>
           <view class="stateDetail" style="margin-left:90rpx;">
+            <image class="nowStateImg" src="{{item.type>6&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>6?'#333333':'#999999'}};"  class="stateText">发货审核</view>
+          </view>
+          <!-- <view class="stateDetail" style="margin-left:70rpx;">
+            <image class="nowStateImg" src="{{item.type>7&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
+            <view style="color: {{item.type>7?'#333333':'#999999'}};"  class="stateText">发货中</view>
+          </view> -->
+          <view class="stateDetail" style="margin-left:100rpx;">
             <image class="nowStateImg" src="{{item.type>=13&&item.type!=100?'../../../img/stateChecked.png':'../../../img/stateUnchecked.png'}}"></image>
-            <view style="color: {{item.type>=13?'#333333':'#999999'}};"  class="stateText">出货</view>
+            <view style="color: {{item.type>=13?'#333333':'#999999'}};"  class="stateText">已发货</view>
           </view>
         </view>
       </view>
@@ -124,9 +132,9 @@
         <!-- 已蒸化状态，显示检验按钮 -->
         <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}" wx:if="{{item.type==5 && (role==6||role==2)&&item.type!=100}}" catchtap="handlerCheck">检验</view>
         <!-- 点击发货按钮，显示发货审核按钮，业务员 -->
-        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==7 && (role==1||role==2)&&item.type!=100}}" catchtap="handlerSendCheck">发货审核</view>
+        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==6 && (role==1||role==2)&&item.type!=100}}" catchtap="handlerSendCheck">发货审核</view>
         <!-- 检验完成，显示发货按钮，仓管 -->
-        <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==6 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerSend">发货</view>
+        <!-- <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==6 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerSend">发货</view> -->
         <!-- 发货审核通过状态，显示快递单号按钮 仓库管理员 -->
         <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}" data-okMeter="{{item.okMeter}}" data-badMeter="{{item.badMeter}}" data-message="{{item.note}}"  wx:if="{{item.type==10 && (role==3||role==2)&&item.type!=100}}" catchtap="handlerkuaidiForm">快递单号</view>
         <!-- 发货审核通过状态，如果是业务员角色，显示退货按钮 -->

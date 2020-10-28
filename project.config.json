@@ -107,6 +107,27 @@
 					"id": -1,
 					"name": "pages/orderPart/flaw/index",
 					"pathName": "pages/orderPart/flaw/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/knowLedgeCount/home/home",
+					"pathName": "pages/knowLedgeCount/home/home",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/knowLedgeCount/detail/detail",
+					"pathName": "pages/knowLedgeCount/detail/detail",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/orderPart/orderList/orderList",
+					"pathName": "pages/orderPart/orderList/orderList",
 					"scene": null
 				}
 			]
