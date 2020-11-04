@@ -87,8 +87,6 @@ Page({
   },
   //点击顶部分类
   changeType(e){
-    console.log(e)
-    console.log(e.currentTarget.dataset['index'])
     this.setData({
       selectTypeIndex: e.currentTarget.dataset['index']
     })
@@ -129,7 +127,6 @@ Page({
     if (_this.data.searchEndTime != null){
       obj.endTime = _this.data.searchEndTime+" 23:59:59";
     }
-    // console.log(this.data.type)
     if(this.data.type != ''){
       obj.type = this.data.type
     }
@@ -137,12 +134,27 @@ Page({
       obj.key = this.data.key
     }
     request.request('/order', obj, 'get','orderPart', (res) => {
-      // console.log('订单列表',res)
       wx.showToast({
         title: '加载完成',
         duration:2000
       })
-      let orderList = res.data.data.list;
+      let orderList = []
+      if (this.data.role===5){
+        const length = res.data.data.list.length
+        const data = res.data.data.list
+        for (let a = 0; a < length; a++) {
+          data[a].jiedanBtn = true
+          if (data[a].onlinePrinterIds){
+            const arr = data[a].onlinePrinterIds.split(',')
+            if (arr.indexOf(this.data.userId.toString()) !== -1) {
+              data[a].jiedanBtn = false
+            }
+          }
+        }
+        orderList = data;
+      } else {
+        orderList = res.data.data.list
+      }
       if(orderList.length>0){
         for (var i = 0; i < orderList.length; i++) {
           orderList[i].createTime = util.formatTime2(orderList[i].createTime)
@@ -206,7 +218,6 @@ Page({
         }
       },
       fail(res) {
-        //console.log(res.errMsg)
       }
     })
   },
@@ -408,7 +419,6 @@ Page({
   },
   //点击数量输入按钮显示打印米数输入框
   handlerHavePrint(e){
-    // console.log(e)
     this.setData({
       finishMeter: e.currentTarget.dataset.finishmeter
     })
@@ -482,7 +492,7 @@ Page({
       request.request('/flow/' + _this.data.orderId, {
         type: 4,
         note: '',
-        meter: parseInt(_this.data.dayinMeter),
+        meter: parseFloat(_this.data.dayinMeter),
         okMeter: 0,
         badMeter: 0,
         expressNumber: '',
@@ -509,7 +519,6 @@ Page({
   handlerNext(e) {
     const indexE = e.currentTarget.dataset.index
     const objE = this.data.orderList[indexE]
-    // console.log(objE)
     this.setData({
       meter: ''
     })
@@ -522,7 +531,6 @@ Page({
     }
     // 上浆调拨显示库存
     request.request('/inventory/xcx', a, 'get', 'orderPart', (res) => {
-      // console.log('库存', res)
       wx.showToast({
         title: res.data.message,
       })
@@ -535,28 +543,10 @@ Page({
         meter:'',
         shangjiangNum:''
       })
-      // let orderList = res.data.data.list;
-      // if (orderList.length > 0) {
-      //   for (var i = 0; i < orderList.length; i++) {
-      //     orderList[i].createTime = util.formatTime2(orderList[i].createTime)
-      //     orderList[i].totalPrice = util.fmoney(orderList[i].totalPrice)
-      //   }
-      // }
-      // _this.setData({
-      //   orderList: orderList,
-      //   imgBaseUrl: res.data.wwwFileBaseUrl,
-      //   total: res.data.data.total
-      // });
     })
-    //显示弹框
-    // this.setData({
-    //   showNextBox: true
-    // })
   },
   // 上浆调拨输入框验证规则
   maxNum1(a){
-    // console.log(a.detail.value)
-    // console.log(this.data.num1)
     if (parseFloat(a.detail.value)>this.data.num1){
       this.setData({
         meter: this.data.num1
@@ -604,13 +594,6 @@ Page({
         inventoryId: this.data.inventoryId,
       },
         'POST', 'orderPart', (res) => {
-          // wx.hideLoading();
-          // wx.showToast({
-          //   title: res.data.message,
-          // })
-          // _this.getList();
-          // _this.cancelNext();
-          // console.log(res)
           if (res.data.code !== 0) {
             return wx.showToast({
               title: res.data.message,
@@ -641,11 +624,6 @@ Page({
   },
   // 上浆调拨米数输入框
   bindMeterInput(e) {
-    // console.log(e.detail.value)
-    // console.log(this.data.unfinishMeter)
-    // if (e.detail.value > this.data.unfinishMeter){
-    //   e.detail.value = this.data.unfinishMeter
-    // }
     this.setData({
       meter: e.detail.value
     })
@@ -658,16 +636,9 @@ Page({
   },
   // 打印米数输入框
   bindDayinMeterInput(e) {
-    // console.log(e.detail.value)
-    if (e.detail.value > this.data.unfinishMeter){
-      this.setData({
-        dayinMeter: this.data.unfinishMeter
-      })
-    }else{
-      this.setData({
-        dayinMeter: e.detail.value
-      })
-    }
+    this.setData({
+      dayinMeter: e.detail.value
+    })
   },
   //点击完成打印按钮待修改
   handlerHavePrintFinish(e) {
@@ -704,7 +675,6 @@ Page({
   },
   //点击蒸化显示确认框
   handlerSteam(e){
-    // console.log('蒸化按钮点击')
     let _this = this;
     wx.showModal({
       title: '提示',
@@ -726,14 +696,12 @@ Page({
             machineName: ''
           },
             'POST', 'orderPart', (res) => {
-              // console.log(res)
               wx.hideLoading();
               wx.showToast({
                 title: res.data.message,
                 duration: 2000,
                 success: () => {
                   _this.getList();
-                  // console.log('蒸化成功')
                 }
               })
             })
@@ -853,7 +821,6 @@ Page({
                   _this.getList();
                 }
               })
-              console.log(res)
             })
         } else if (res.cancel) {
         }
@@ -906,8 +873,6 @@ Page({
                   _this.getList();
                 }
               })
-              // if()
-              console.log(res)
             }
           )
         }
@@ -945,22 +910,6 @@ Page({
         icon: 'none'
       })
     } else {
-      // let expressNumber = this.data.expressNumberAll
-      // const companyName = this.data.companyName
-      // const expressNumber1 = this.data.expressNumber
-      // let expressNumberArr = this.data.expressNumberArr
-      // if (this.data.companyName==='自提') {
-      //   expressNumber = expressNumber + companyName + ';'
-      //   expressNumberArr.push({ companyName: companyName, expressNumber:''})
-      // } else {
-      //   expressNumber = expressNumber + companyName + ':' + expressNumber1 + ';'
-      // }
-      // this.setData({
-      //   expressNumberAll: expressNumber,
-      //   expressNumber:'',
-      //   expressNumberArr: expressNumberArr
-      // })
-      // console.log(this.data.expressNumberAll)
       this.addExpressNumber()
     }
   },
@@ -994,7 +943,6 @@ Page({
   },
   //快递单号输入框确认按钮弹出确定框
   sureSend() {
-    // console.log(this.data.expressNumberAll)
     if (this.data.companyName == '') {
       wx.showToast({
         title: '请输入快递公司',
@@ -1012,49 +960,6 @@ Page({
         showSubmitCourier: true
       })
     }
-    console.log(this.data.expressNumberAll)
-    // let _this = this;
-    //判断
-    // if (_this.data.companyName == '') {
-    //   wx.showToast({
-    //     title: '请输入快递公司',
-    //     icon: 'none'
-    //   })
-    // } else if (_this.data.companyName !='自提'&&_this.data.expressNumber == '') {
-    //   wx.showToast({
-    //     title: '请输入快递单号',
-    //     icon: 'none'
-    //   })
-    // }else {
-    //   wx.showLoading({
-    //     title: '正在提交'
-    //   })
-    //   request.request('/flow/' + _this.data.orderId, {
-    //     type: 7,
-    //     note: '',
-    //     meter: 0,
-    //     okMeter: 0,
-    //     badMeter: 0,
-    //     expressType: _this.data.companyName,
-    //     expressNumber: _this.data.expressNumber,
-    //     machineId: 0,
-    //     machineName: '',
-    //     id: _this.data.orderId
-    //   },
-    //     'POST', 'orderPart', (res) => {
-    //       wx.hideLoading();
-    //       wx.showToast({
-    //         title: res.data.message,
-    //         duration: 2000,
-    //         success: () => {
-    //           _this.setData({
-    //             showSendBox: false
-    //           })
-    //           _this.getList();
-    //         }
-    //       })
-    //     })
-    // }
   },
   // 快递预览确定
   sureSendbtn () {
@@ -1076,7 +981,6 @@ Page({
             _this.getList();
           }
         })
-        console.log(res)
       }
     )
   },
@@ -1162,7 +1066,6 @@ Page({
   },
   //厂长点击修改订单
   updateOrder(e){
-    // console.log(e)
     //存储订单信息
     wx.removeStorageSync("orderInfo")
     wx.setStorageSync("orderInfo", this.data.orderList[e.currentTarget.dataset.index])
@@ -1174,7 +1077,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // console.log(options)
     let _this = this;
     if (options["id"]){
       _this.setData({
@@ -1188,7 +1090,6 @@ Page({
         searchOrderId: id.substring(index,id.length)
       })
     }
-    // console.log(options.orderStatus)
     if (options.orderStatus){
       let status = options.orderStatus;
       _this.setData({
@@ -1225,7 +1126,6 @@ Page({
         searchContacts: status
       })
     }
-    // console.log(options.flowerNum)
     if (options.flowerNum) {
       let status = options.flowerNum;
       _this.setData({

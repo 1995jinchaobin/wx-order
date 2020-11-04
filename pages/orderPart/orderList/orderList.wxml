@@ -85,7 +85,7 @@
       <!-- 如果已分配打印机器，则显示在线打印员字段 -->
       <view class="orderNeedTime" style="margin-top:7rpx" wx:if="{{item.type==3&&item.type!=100}}">
         <view>在线打印员：</view>
-        <view class="needTimeDetail">{{item.onlinePrinter==null?'无':item.onlinePrinter}}</view>
+        <view class="needTimeDetail">{{item.onlinePrinters==null?'无':item.onlinePrinters}}</view>
       </view>
       <!-- 已发货状态显示快递信息 -->
       <view class="expressInfo orderNeedTime" style="margin-top:6rpx;" wx:if="{{(item.type==13)&&(role==0||role==1||role==2||role==3)&&item.type!=100}}">
@@ -121,12 +121,13 @@
           </view>
         </picker>
         <!-- 已分配打印状态，并且该订单没有在线打印员，打印员可以接单 -->
-        <view data-id="{{item.id}}" style="margin-top:-84rpx" data-Index="{{index}}" class="toPay" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.onlinePrinterId==0}}" catchtap="receivePrint">接单</view>
+        <view data-id="{{item.id}}" style="margin-top:-84rpx" data-Index="{{index}}" class="toPay" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.jiedanBtn}}" catchtap="receivePrint">接单</view>
+        <!-- <view>{{item.onlinePrinterIds}}.split(',')+'123'</view> -->
         <!-- 已分配打印状态，并且该订单的在线打印员是自己，打印员可以换班 -->
-        <view data-id="{{item.id}}" style="margin-top:-84rpx" data-Index="{{index}}" class="toPay" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.onlinePrinterId!=0&&item.onlinePrinterId==userId}}" catchtap="changePrint">换班</view>
+        <view data-id="{{item.id}}" style="margin-top:-84rpx" data-Index="{{index}}" class="toPay" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.onlinePrinterId!=0&&item.jiedanBtn==false}}" catchtap="changePrint">换班</view>
         <!-- 已分配打印状态，显示数量输入按钮和剩余未打印米数 -->
-        <view data-id="{{item.id}}" data-finishMeter="{{item.finishMeter}}" data-unfinishMeter="{{item.unfinishMeter}}" class="toPay leftButton" wx:if="{{item.type==3 && role==5&&item.type!=100}}" catchtap="handlerHavePrint">数量输入</view>
-        <view data-id="{{item.id}}" data-finishMeter="{{item.finishMeter}}" data-unfinishMeter="{{item.unfinishMeter}}" class="toPay"  style="right:32rpx;background-color:#'108EE9';color:#'FFFFFF';" wx:if="{{item.type==3 && role==5&&item.type!=100}}" catchtap="handlerHavePrintFinish">完成打印</view>
+        <view data-id="{{item.id}}" data-finishMeter="{{item.finishMeter}}" data-unfinishMeter="{{item.unfinishMeter}}" class="toPay leftButton" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.jiedanBtn==false}}" catchtap="handlerHavePrint">数量输入</view>
+        <view data-id="{{item.id}}" data-finishMeter="{{item.finishMeter}}" data-unfinishMeter="{{item.unfinishMeter}}" class="toPay"  style="right:32rpx;background-color:#'108EE9';color:#'FFFFFF';" wx:if="{{item.type==3 && role==5&&item.type!=100&&item.jiedanBtn==false}}" catchtap="handlerHavePrintFinish">完成打印</view>
         <!-- 已打印状态，显示蒸化按钮 -->
         <view data-id="{{item.id}}"  class="toPay leftButton"  style="right:{{role==2?230:32}}rpx;background-color:#{{role==2?'F1F2F6':'108EE9'}};color:#{{role==2?'646D7D':'FFFFFF'}}"  data-message="{{item.note}}" wx:if="{{item.type==4 && (role==6||role==2)&&item.type!=100}}" catchtap="handlerSteam">蒸化</view>
         <!-- 已蒸化状态，显示检验按钮 -->

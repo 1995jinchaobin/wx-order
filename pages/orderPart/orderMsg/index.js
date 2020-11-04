@@ -17,12 +17,11 @@ Page({
     maxImgUrl:'',
     maxFlowerName:'',
     role:0,
-    statusList: ['审核不通过', '下单', '审核通过', '上浆', '分配打印', '完成打印', '蒸化', '检验', '发货', '退货', '发货审核','直接完成打印','调色','检验','提交快递单'],
+    statusList: ['审核不通过', '下单', '审核通过', '上浆', '分配打印', '打印', '蒸化', '检验', '发货', '退货', '发货审核','完成打印','调色','检验','提交快递单'],
     wwwFileBaseUrl:''
   },
   clickImg(e){
     let item = e.target.dataset.item;
-    console.log(item)
     let _this = this;
     let imgUrl="";
     wx.getStorage({
@@ -97,7 +96,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options)
     wx.setNavigationBarTitle({
       title: '订单信息'
     })
@@ -110,38 +108,6 @@ Page({
       for (let i = 0;i< msg.orderOperations.length;i++){
         msg.orderOperations[i].createTime = util.formatTime3(msg.orderOperations[i].createTime);
       }
-      // let orderCommentList0 = [];
-      // let orderCommentList0Before = [];
-      // console.log(msg.orderCommentList0.length)
-      // if (msg.orderCommentList0 != undefined && msg.orderCommentList0.length>0 ) {
-      //   if (msg.orderCommentList0[0].url.length > 0&& msg.orderCommentList0[0].url != undefined) {
-      //     if (msg.orderCommentList0[0].url.indexOf(',')==-1){
-      //       orderCommentList0Before.push(msg.orderCommentList0[0].url);
-      //     }else{
-      //       orderCommentList0Before = msg.orderCommentList0[0].url.split(',');
-      //     }
-      //     for (let i = 0; i < orderCommentList0Before.length; i++) {
-      //       orderCommentList0.push(orderCommentList0Before[i]);
-      //     }
-      //     msg.orderCommentList0 = orderCommentList0;
-      //   }
-      // }
-      // let orderCommentList1 = [];
-      // let orderCommentList1Before = [];
-      // if (msg.orderCommentList1 != undefined && msg.orderCommentList1.length > 0) {
-      //   if (msg.orderCommentList1[0].url.length > 0 && msg.orderCommentList1[0].url != undefined) {
-      //     if (msg.orderCommentList1[0].url.indexOf(',') == -1) {
-      //       orderCommentList1Before.push(msg.orderCommentList1[0].url);
-      //     } else {
-      //       orderCommentList1Before = msg.orderCommentList1[0].url.split(',');
-      //     }
-      //     for (let i = 0; i < orderCommentList1Before.length; i++) {
-      //       orderCommentList1.push(orderCommentList1Before[i]);
-      //     }
-      //     msg.orderCommentList1 = orderCommentList1;
-      //   }
-      // }
-      console.log(msg.orderCommentList0)
       let url = options.url;
       this.setData({
         orderInfo: msg,
