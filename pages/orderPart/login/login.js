@@ -111,7 +111,6 @@ Page({
                                 });
                               })
                             } else {
-                              console.log('登录失败！' + res.errMsg)
                             }
                           }
                         })
@@ -121,7 +120,6 @@ Page({
                 }
               }, (err) => { })
             } else {
-              console.log('登录失败！' + res.errMsg)
             }
           }
         })
@@ -140,7 +138,6 @@ Page({
     wx.getStorage({
       key: 'loginInfo',
       success(res) {
-        console.log(res);
         if (res.data) {
           _this.setData({
             'account': res.data.account

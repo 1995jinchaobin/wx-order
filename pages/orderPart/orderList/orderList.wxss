@@ -346,7 +346,8 @@
   top: 200rpx;
   position: fixed;
   left: 50%;
-  translate:-50%; 
+  /* translate:t-50%;  */
+  transform: translateX(-50%);
   width: 500rpx;
   background-color: #fff;
   color: #bbb;

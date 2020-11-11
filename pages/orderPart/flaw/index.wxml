@@ -8,7 +8,7 @@
     </view>
     <view class="fabric">
         <text>疵点米数</text>
-        <input placeholder-class="input-placeholder" type="text"  bindblur="numChange" placeholder="米" value="{{num}}"></input>
+        <input placeholder-class="input-placeholder" type="digit"  bindblur="numChange" placeholder="米" value="{{num}}"></input>
         <!-- <text class="hui">米</text> -->
     </view>
     <view class="fabric">
@@ -94,12 +94,12 @@
     <view class='showInputPishuArea' style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;">
       <view class='checkMeterAreaInputArea'>
         <view class="printMeterAreaInputAreaTitle">合格数量：</view>
-        <input bindinput='bindOkMeterInput' value="{{okMeter}}" type='number'></input>
+        <input bindinput='bindOkMeterInput' value="{{okMeter}}" type='digit'></input>
         <view class='meterText'>米</view>
       </view>
       <view class='checkMeterAreaInputArea' style="margin-top:10px;">
         <view class="printMeterAreaInputAreaTitle">次品数量：</view>
-        <input bindinput='bindBadMeterInput' value="{{badMeter}}" type='number'></input>
+        <input bindinput='bindBadMeterInput' value="{{badMeter}}" type='digit'></input>
         <view class='meterText'>米</view>
       </view>
       <view class='printBtnArea'>

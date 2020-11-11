@@ -152,7 +152,7 @@
   <view wx:if="{{showPrintBox}}" style="top:{{(screenHeight-statusBarHeight-112)/2}}rpx;" class='printMeterArea'>
     <view class='printMeterTitle'>输入打印米数</view>
     <view class='printMeterAreaInputArea'>
-      <input bindinput='bindDayinMeterInput' value="{{dayinMeter}}" type='number'></input>
+      <input bindinput='bindDayinMeterInput' value="{{dayinMeter}}" type='digit'></input>
       <view class='meter'>米</view>
     </view>
     <view class='printTip'>您已打印{{finishMeter}}米，还剩{{unfinishMeter }}米</view>

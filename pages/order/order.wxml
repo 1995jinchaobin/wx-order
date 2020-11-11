@@ -63,11 +63,11 @@
     </view>
     <view class="fabric">
       <text>单价</text>
-      <input type="text" disabled="{{!isType}}" bindblur="setPrice" placeholder="元" value="{{price}}"></input>
+      <input type="digit" disabled="{{!isType}}" bindblur="setPrice" placeholder="元" value="{{price}}"></input>
     </view>
     <view class="fabric">
       <text>打印数量</text>
-      <input type="text" disabled="{{!isType}}" bindblur="setSize" placeholder="米" value="{{size}}"></input>
+      <input type="digit" disabled="{{!isType}}" bindblur="setSize" placeholder="米" value="{{size}}"></input>
     </view>
     <view class="fabric">
       <text>是否加急</text>

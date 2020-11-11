@@ -10,14 +10,16 @@ Page({
     requestUrl:{
       // 订单接口
       order:'/order',
-      // 面料接口
+      // 面料接口(对应客户)
       fabric:'/fabric/select',
       // 上传花型
       file: '/file',
       // 配置方案
       config:'/config',
       //员工
-      user:'/user'
+      user:'/user',
+      // 面料,
+      fabricAll: '/fabric'
     },
     // 联系人信息
     userInfo:'',
@@ -47,8 +49,8 @@ Page({
     wwwFileBaseUrl:'',
     flowerUpShow:false,
     date: '2016-09-01',
-    price:0,
-    size:0,
+    price:'',
+    size:'',
     allPrice:0,
     note:"",
     // 确认提交还是确认修改，默认提交
@@ -84,14 +86,12 @@ Page({
   },
   // 点击选择客户（选择联系人）
   userChange(){
-    console.log('点击联系人')
     let _this = this;
     if(_this.data.isType){
       wx.navigateTo({
         url: '/pages/client/clientList/index',
         events: {
           getClientInfo: function (data) {
-            console.log(data)
             let clientInfo = JSON.parse(data.clientInfo).userDetail;
             clientInfo.id = clientInfo.fkUserId;
             _this.setData({
@@ -101,6 +101,9 @@ Page({
             _this.setData({
               colorBoyIndex:0
             })
+            if (_this.data.fabricTypeIndex == 1) {
+              _this.getFabricListAll()
+            }
           },
         },
         success: function (res) {
@@ -112,15 +115,8 @@ Page({
       fabricIndex: 0
     })
   },
-  // 点击面料输入
-  // mianLiaoClick(){
-  //   console.log(this.data.userInfo)
-  //   console.log(this.data.userInfo.fkUserId)
-  // },
   // 选择面料
   bindPickerChange(e){
-    console.log(this.data.userInfo)
-    console.log(e.detail.value)
     this.setData({
       fabricIndex: e.detail.value
     })
@@ -130,12 +126,46 @@ Page({
     this.setData({
       fabricTypeIndex: e.detail.value
     })
+    if (this.data.fabricTypeIndex==1){
+      this.getFabricListAll()
+    } else{
+      console.log(123)
+      this.getFabricList(this.data.userInfo)
+      this.setData({
+        fabricIndex: 0
+      })
+    }
+  },
+  // 获取所有面料列表
+  getFabricListAll () {
+    let _this = this;
+    let data = {
+      page: 1,
+      rows: 999,
+    }
+    request.request(this.data.requestUrl.fabricAll, data, 'get', '', (res) => {
+      console.log(res)
+      const resLength = res.data.data.list.length
+      let list = [
+        {
+          id: 0,
+          name: '选择面料'
+        }
+      ]
+      for (let i = 0; i < resLength; i++) {
+        list.push(res.data.data.list[i])
+      }
+      console.log(list)
+      _this.setData({
+        fabricList: list,
+        wwwFileBaseUrl: res.data.wwwFileBaseUrl
+      })
+    })
   },
   // 选择快递方式
   bindDeliceryChange(e){
-    console.log('快递方式', e.detail.value)
     this.setData({
-      fabricTypeIndex: e.detail.value
+      deliveryIndex: e.detail.value
     })
   },
   // 选择配送时间
@@ -152,24 +182,19 @@ Page({
   },
   // 选择调色员
   colorBoyChange(e) {
-    console.log('调色员改变')
     this.setData({
       colorBoyIndex: e.detail.value
     })
   },
   // 获取面料列表
   getFabricList(userInfo){
-    console.log('获取面料列表', userInfo.id)
     let _this = this;
     let data = {
       page: 1,
       rows: 999,
       fkCustomerId: userInfo.id == null ? 0 : userInfo.id
     }
-    console.log(data)
-    // console.log(this.data.requestUrl)
     request.request(this.data.requestUrl.fabric,data,'get','',(res)=>{
-      console.log('面料',res.data.data)
       const resLength = res.data.data.length
       if (resLength===0) {
         _this.setData({
@@ -180,12 +205,10 @@ Page({
         })
         return
       }
-      // let list = _this.data.fabricList;
       let list = [
             {id:0,
           name:'选择面料'}
           ]
-      // console.log(res.data.data.length)
       for(let i = 0;i < res.data.data.length;i++){
         list.push(res.data.data[i])
       }
@@ -216,7 +239,6 @@ Page({
           }
           index++;
         })
-        console.log(fabricIndex)
         _this.setData({
           fabricIndex: fabricIndex
         })
@@ -225,7 +247,6 @@ Page({
   },
   // 获取配置方案（页面加载获取）
   getConfigList(){
-    console.log('获取配置方案')
     let _this = this;
     let data = {
       page: 1,
@@ -280,7 +301,6 @@ Page({
   },
   // 获取调色员(页面加载获取)
   getColorBoyList() {
-    console.log('获取调色员')
     let _this = this;
     let data = {
       page: 1,
@@ -289,7 +309,6 @@ Page({
     }
     request.request(this.data.requestUrl.user, data, 'get', '', (res) => {
       let list = _this.data.colorBoyList;
-      console.log(res)
       if (res.data.data.list.length>0){
         for (let i = 0; i < res.data.data.list.length; i++) {
           list.push(res.data.data.list[i])
@@ -358,9 +377,6 @@ Page({
       wx.chooseImage({
         success(res){
           let requserImgUrl = res.tempFilePaths[0];
-          console.log('url: ',request.baseUrl + _this.data.requestUrl.file)
-          console.log('filePath: ',requserImgUrl)
-          console.log('formData: ', {type:0})
           wx.uploadFile({
             url: request.baseUrl + _this.data.requestUrl.file,
             filePath: requserImgUrl,
@@ -372,7 +388,6 @@ Page({
               type: 0
             },
             success(res){
-              console.log(res)
               let result = JSON.parse(res.data);
               if (result.code == 0){
                 let list = {
@@ -499,13 +514,6 @@ Page({
       })
       return;
     }
-    if (this.data.colorBoyIndex == 0) {
-      wx.showToast({
-        title: '请选择调色员',
-        icon: 'none'
-      })
-      return;
-    }
     if (this.data.price <= 0){
       wx.showToast({
         title: '请输入正确的单价',
@@ -539,7 +547,6 @@ Page({
         data: ''
       })
     }
-    console.log(flowerMsg)
     if (flowerMsg == '') {
       wx.showToast({
         title: '请上传花型图片',
@@ -569,13 +576,14 @@ Page({
       configName: this.data.configList[this.data.configIndex].name,
       expedite: this.data.expedite
     }
-    console.log(data)
+    if (this.data.colorBoyIndex == 0) {
+      data.colorName = '无调色员'
+    }
     if(this.data.bottonClicked){
       this.setData({
         bottonClicked: false
       })
       request.request(this.data.requestUrl.order,data,'post','',(result)=>{
-        console.log(result)
         let resultCode = result.data.code;
         wx.navigateTo({
           url:'/pages/orderPart/orderResult/orderResult',
@@ -595,7 +603,6 @@ Page({
   },
   // 订单修改
   orderRevise(){
-    console.log('订单修改')
     let num = 0;
     let listLength = 0;
     let flowerMsg = '';
@@ -603,13 +610,6 @@ Page({
     if (this.data.fabricIndex == 0) {
       wx.showToast({
         title: '请选择面料',
-        icon: 'none'
-      })
-      return;
-    }
-    if (this.data.colorBoyIndex == 0) {
-      wx.showToast({
-        title: '请选择调色员',
         icon: 'none'
       })
       return;
@@ -661,7 +661,6 @@ Page({
       })
       return;
     }
-    console.log(this.data)
     let data = {
       companyName: this.data.userInfo.companyName,
       fkCustomerId: this.data.userInfo.id,
@@ -685,7 +684,9 @@ Page({
       configName: this.data.configList[this.data.configIndex].name,
       expedite: this.data.expedite
     }
-    console.log(data)
+    if (this.data.colorBoyIndex == 0) {
+      data.colorName = '无调色员'
+    }
     request.requestPut(this.data.requestUrl.order + '/' + this.data.id, data, '', (result)=>{
       let resultCode = result.data.code;
       wx.navigateTo({
@@ -701,7 +702,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options)
     this.getColorBoyList(); 
     this.getConfigList();
     let date = util.formaData();
@@ -714,7 +714,6 @@ Page({
     })
     if(options.flowerInfo){
       let flowerList = JSON.parse(options.flowerInfo);
-      // console.log(flowerList)
       let flowerListResult=[];
       flowerList.forEach(item=>{
         item.num = item.picName;
@@ -781,7 +780,6 @@ Page({
     }
     if (options.orderUpdate){
       let orderInfo = wx.getStorageSync("orderInfo");
-      // console.log(orderInfo)
       // 如果该订单是厂长自己创建的，则可以修改其他选项
       if (orderInfo.fkUserId != wx.getStorageSync("userInfo").id||orderInfo.type>0){
         this.setData({
@@ -845,7 +843,8 @@ Page({
       // this.getFabricList({id:null})
     }
     if (JSON.stringify(options)==='{}'){
-      this.getFabricList({ id: null })
+      // this.getFabricList({ id: null })
+      this.getFabricListAll()
     }
   },
 
